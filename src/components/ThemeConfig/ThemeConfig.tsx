@@ -1,7 +1,4 @@
 import DeleteIcon from '@mui/icons-material/Delete';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic';
-import FormatUnderlineIcon from '@mui/icons-material/FormatUnderlined';
 import Autocomplete from '@mui/material/Autocomplete';
 import Card from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
@@ -16,12 +13,16 @@ import { debounce } from 'es-toolkit';
 import { editor } from 'monaco-editor';
 import { useState } from 'react';
 import { aceSourceColors } from '../../editor/theme';
+import FormatOptionsSelector from './FormatOptionSelector';
 import OptionAdder from './OptionAdder';
 import ThemeRuleSelector from './ThemeRuleSelector';
+import { textFormatOptions } from './constants';
 import type { ColourOption, RuleChangeAction, ThemeRule } from './types';
 
-function themeToRules(theme: editor.IStandaloneThemeData) {
-  return theme.rules.reduce<Record<string, ThemeRule>>((res, { token, foreground, background, fontStyle }) => ({
+type ThemeRulesRecord = Record<string, ThemeRule>;
+
+function themeToRules(theme: editor.IStandaloneThemeData): ThemeRulesRecord {
+  return theme.rules.reduce<ThemeRulesRecord>((res, { token, foreground, background, fontStyle }) => ({
     ...res,
     [token]: {
       token,
@@ -41,7 +42,7 @@ function themeToRules(theme: editor.IStandaloneThemeData) {
   {});
 }
 
-function rulesToTheme(rules: Record<string, ThemeRule>): editor.ITokenThemeRule[] {
+function rulesToTheme(rules: ThemeRulesRecord): editor.ITokenThemeRule[] {
   return Object.entries(rules)
     .filter(([, { enabled }]) => enabled)
     .map(([token, { fg, bg, bold, italic, underline }]) => ({
@@ -56,7 +57,7 @@ function rulesToTheme(rules: Record<string, ThemeRule>): editor.ITokenThemeRule[
     }));
 }
 
-function themeReducer(prev: Record<string, ThemeRule>, { token, ...action }: RuleChangeAction): Record<string, ThemeRule> {
+function themeReducer(prev: ThemeRulesRecord, { token, ...action }: RuleChangeAction): ThemeRulesRecord {
   switch (action.type) {
     case 'bg': {
       const newBg: ColourOption = action.newValue === false
@@ -116,16 +117,17 @@ function themeReducer(prev: Record<string, ThemeRule>, { token, ...action }: Rul
       const { [token]: old, ...rest } = prev;
       return rest;
     }
-    case 'format':
+    case 'format':{
+      const newRule = textFormatOptions.reduce<ThemeRule>((res, option) => ({
+        ...res,
+        [option]: action[option] ?? prev[token][option]
+      }), prev[token]);
+
       return {
         ...prev,
-        [token]: {
-          ...prev[token],
-          italic: action.italic ?? prev[token].italic,
-          bold: action.bold ?? prev[token].bold,
-          underline: action.underline ?? prev[token].underline,
-        }
+        [token]: newRule
       };
+    }
     case 'add':
       return {
         ...prev,
@@ -139,33 +141,27 @@ function themeReducer(prev: Record<string, ThemeRule>, { token, ...action }: Rul
   }
 }
 
-const icons = {
-  bold: <FormatBoldIcon />,
-  italic: <FormatItalicIcon />,
-  underline: <FormatUnderlineIcon />
-};
-
 interface ThemeConfigProps {
   themeId: string;
   theme: editor.IStandaloneThemeData;
 }
 
+const updateTheme = debounce((newRules: ThemeRulesRecord, theme: editor.IStandaloneThemeData, themeId: string) => {
+  editor.defineTheme(themeId, {
+    ...theme,
+    rules: rulesToTheme(newRules)
+  });
+  editor.setTheme(themeId);
+}, 300);
+
 export default function ThemeConfig({ theme, themeId }: ThemeConfigProps) {
   const [rules, setRules] = useState(themeToRules(theme));
   const [ruleName, setRuleName] = useState('');
 
-  const updateTheme = debounce((newRules: Record<string, ThemeRule>) => {
-    editor.defineTheme(themeId, {
-      ...theme,
-      rules: rulesToTheme(newRules)
-    });
-    editor.setTheme(themeId);
-  }, 300);
-
   function dispatch(action: RuleChangeAction) {
     const newRules = themeReducer(rules, action);
     setRules(newRules);
-    updateTheme(newRules);
+    updateTheme(newRules, theme, themeId);
   }
 
   const rule = rules[ruleName];
@@ -252,19 +248,16 @@ export default function ThemeConfig({ theme, themeId }: ThemeConfigProps) {
                     })}
                   />
                 </Grid>
-                {(['bold', 'italic', 'underline'] as const).map(each => <Grid size={4}>
-                  <Stack direction="row" sx={{ alignItems: 'center' }}>
-                    <Checkbox
-                      checked={!!rule[each]}
-                      onClick={() => dispatch({
-                        type: 'format',
-                        token: ruleName,
-                        [each]: !rule[each]
-                      })}
-                    />
-                    {icons[each]}
-                  </Stack>
-                </Grid>)}
+                <Grid size={12}>
+                  <FormatOptionsSelector
+                    rule={rule}
+                    onChange={opt => dispatch({
+                      type: 'format',
+                      token: ruleName,
+                      [opt]: !rule[opt]
+                    })}
+                  />
+                </Grid>
               </Grid>
             </div>
           </Card>

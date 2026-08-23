@@ -8,8 +8,9 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
+import FormatOptionsSelector from './FormatOptionSelector';
 import ThemeRuleSelector from './ThemeRuleSelector';
-import type { ThemeRule } from './types';
+import type { TextFormatOptions, ThemeRule } from './types';
 
 interface OptionAdderProps {
   currentRules: string[];
@@ -23,6 +24,8 @@ export default function OptionAdder({ currentRules, onConfirm }: OptionAdderProp
 
   const [bgValue, setBgValue] = useState('000000');
   const [bgEnabled, setBgEnabled] = useState(true);
+
+  const [formatOpts, setFormatOpts] = useState<TextFormatOptions>({});
 
   function validate() {
     if (tokenName === '') return "'' is not a valid token name";
@@ -38,10 +41,26 @@ export default function OptionAdder({ currentRules, onConfirm }: OptionAdderProp
     return undefined;
   }
 
+  function confirmRule() {
+    onConfirm?.({
+      token: tokenName,
+      enabled: true,
+      fg: {
+        value: fgValue,
+        enabled: fgEnabled
+      },
+      bg: {
+        value: bgValue,
+        enabled: bgEnabled
+      },
+      ...formatOpts
+    });
+  }
+
   const validateResult = validate();
 
   return <Card>
-    <div style={{ paddingBottom: '5px' }}>
+    <div style={{ padding: '5px 5px 5px 5px'}}>
       <Grid container rowSpacing={2}>
         <Grid size={10}>
           <Stack direction='row' sx={{ alignItems: 'center' }}>
@@ -62,18 +81,7 @@ export default function OptionAdder({ currentRules, onConfirm }: OptionAdderProp
         <Grid size={2}>
           <IconButton
             disabled={validateResult !== undefined}
-            onClick={() => onConfirm?.({
-              token: tokenName,
-              enabled: true,
-              fg: {
-                value: fgValue,
-                enabled: fgEnabled
-              },
-              bg: {
-                value: bgValue,
-                enabled: bgEnabled
-              }
-            })}
+            onClick={confirmRule}
           >
             <AddIcon />
           </IconButton>
@@ -94,6 +102,12 @@ export default function OptionAdder({ currentRules, onConfirm }: OptionAdderProp
             enabled={bgEnabled}
             onColourChanged={setBgValue}
             onEnabledChanged={() => setBgEnabled(!bgEnabled)}
+          />
+        </Grid>
+        <Grid size={12}>
+          <FormatOptionsSelector
+            rule={formatOpts}
+            onChange={opt => setFormatOpts(prev => ({ ...prev, [opt]: !prev[opt] }))}
           />
         </Grid>
       </Grid>
