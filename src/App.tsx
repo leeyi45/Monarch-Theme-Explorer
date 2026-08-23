@@ -21,7 +21,6 @@ import type { ILanguageDefinition } from './languages/types';
 export default function App() {
   const [languageDef, setLanguageDef] = useState<ILanguageDefinition>(() => {
     const localStorageItem = localStorage.getItem('langId');
-
     if (localStorageItem === null) return languages[0];
 
     const foundLang = languages.find(({ id }) => id === localStorageItem);
@@ -48,11 +47,10 @@ export default function App() {
     }
   }, 200);
 
-  const resetMonarchEditorValue = (newId: string) => {
-    const languageDef = languages.find(({ id }) => id === newId)!;
-    if (typeof languageDef.monarchGrammar === 'string') return;
+  const resetMonarchEditorValue = (langDef: ILanguageDefinition) => {
+    if (typeof langDef.monarchGrammar === 'string') return;
 
-    const stringified = 'return ' + stringifyMonarchGrammar(languageDef.monarchGrammar);
+    const stringified = 'return ' + stringifyMonarchGrammar(langDef.monarchGrammar);
     monarchEditorRef.current?.setValue(stringified);
   };
 
@@ -78,7 +76,7 @@ export default function App() {
     <Stack direction="row" sx={{ alignItems: 'center' }}>
       <Typography>Monarch Editor</Typography>
       <Tooltip title="Reset the Monarch Grammar">
-        <IconButton onClick={() => resetMonarchEditorValue(languageDef.id)}>
+        <IconButton onClick={() => resetMonarchEditorValue(languageDef)}>
           <RefreshIcon />
         </IconButton>
       </Tooltip>
@@ -110,20 +108,22 @@ export default function App() {
     </Stack>
   );
 
-  const navbar = (<Toolbar>
-    <Stack direction='row' sx={{ width: '100vw' }}>
-      <Autocomplete
-        options={languages}
-        renderInput={props => <TextField {...props} />}
-        getOptionLabel={({ name }) => name}
-        value={languageDef}
-        onChange={(_e, newLang) => {
-          if (newLang === null) return;
-          setLanguageDef(newLang);
-        }}
-      />
-    </Stack>
-  </Toolbar>);
+  const navbar = (
+    <Toolbar>
+      <Stack direction='row' sx={{ width: '100vw' }}>
+        <Autocomplete
+          options={languages}
+          renderInput={props => <TextField {...props} />}
+          getOptionLabel={({ name }) => name}
+          value={languageDef}
+          onChange={(_e, newLang) => {
+            if (newLang === null) return;
+            setLanguageDef(newLang);
+            resetMonarchEditorValue(newLang);
+          }}
+        />
+      </Stack>
+    </Toolbar>);
 
   return <Grid
     container
