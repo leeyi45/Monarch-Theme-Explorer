@@ -190,6 +190,7 @@ export default function ThemeConfig({ theme, themeId }: ThemeConfigProps) {
                       />
                     </Tooltip>
                     <Autocomplete
+                      fullWidth
                       renderInput={props => <TextField
                         {...props}
                         size='small'

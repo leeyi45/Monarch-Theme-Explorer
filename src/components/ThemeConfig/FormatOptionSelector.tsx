@@ -13,7 +13,11 @@ interface FormatOptionSelectorProps {
  */
 export default function FormatOptionsSelector({ rule, onChange }: FormatOptionSelectorProps) {
   return <Stack direction='row' sx={{ alignItems: 'center', justifyContent: 'center' }}>
-    {textFormatOptions.map(each => <Stack direction="row" sx={{ alignItems: 'center' }}>
+    {textFormatOptions.map(each => <Stack
+      direction="row"
+      sx={{ alignItems: 'center' }}
+      key={each}
+    >
       <Checkbox
         checked={!!rule[each]}
         onClick={() => onChange?.(each)}
