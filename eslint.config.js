@@ -83,10 +83,16 @@ export default defineConfig(
     }
   },
   {
-    files: ['**/__tests__/**/*.test.ts'],
+    files: [
+      '**/__tests__/**/*.test.ts',
+      '**/__tests__/**/*.test.tsx',
+    ],
     extends: [vitestPlugin.configs.recommended],
     plugins: {
       vitest: vitestPlugin
+    },
+    rules: {
+      'vitest/valid-title': 'off'
     }
   }
 );

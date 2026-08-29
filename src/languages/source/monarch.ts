@@ -194,7 +194,11 @@ export const sourceBaseMonarch = {
       [/[^\\/]/, 'regexp'],
       [/@regexpesc/, 'regexp.escape'],
       [/\\\./, 'regexp.invalid'],
-      [/(\/)([gimsuy]*)/, [{ token: 'regexp', bracket: '@close', next: '@pop' }, 'keyword.other']],
+      [/\/(?=\*)/, 'regexp'],
+      [
+        /(\/)([gimsuy]*)/,
+        [{ token: 'regexp', bracket: '@close', next: '@pop' }, 'keyword.other']
+      ]
     ],
 
     regexrange: [

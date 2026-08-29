@@ -20,7 +20,7 @@ export default function ColourInputBox({ disabled, value, label, onChange }: Col
     if (text === null) return;
     setText(null);
 
-    if (!/^[0-9A-F]{0,6}$/.test(text)) return;
+    if (!/^[0-9A-F]{6}$/.test(text)) return;
     onChange?.(text);
   };
 
@@ -30,12 +30,25 @@ export default function ColourInputBox({ disabled, value, label, onChange }: Col
     label={label}
     size='small'
     onChange={e => {
-      const newValue = e.target.value;
-      if (newValue.length > 6) return;
+      const newValue = e.target.value.toUpperCase();
+      if (!/^[0-9A-F]{0,6}$/.test(newValue)) return;
 
       setText(newValue);
     }}
     onBlur={confirm}
+    error={text !== null && /^[0-9A-F]{6}$/.test(text)}
+    onKeyUp={e => {
+      switch (e.key) {
+        case 'Enter': {
+          confirm();
+          break;
+        }
+        case 'Escape': {
+          setText(null);
+          break;
+        }
+      }
+    }}
     slotProps={{
       input: {
         startAdornment: <InputAdornment position='start'>#</InputAdornment>,
