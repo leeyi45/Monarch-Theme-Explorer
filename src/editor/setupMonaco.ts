@@ -12,12 +12,16 @@ type MonacoEnvironmentGlobal = typeof globalThis & {
 (self as MonacoEnvironmentGlobal).MonacoEnvironment = {
   getWorker(_, label) {
     if (label === 'json') {
-      return new Worker(new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url), { type: 'module' });
+      return new Worker(new URL('../../node_modules/monaco-editor/esm/vs/language/json/json.worker.js', import.meta.url), {
+        type: 'module',
+      });
     }
     if (label === 'typescript' || label === 'javascript') {
-      return new Worker(new URL('monaco-editor/esm/vs/language/typescript/ts.worker', import.meta.url), { type: 'module' });
+      return new Worker(new URL('../../node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js', import.meta.url), {
+        type: 'module',
+      });
     }
-    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url), {
+    return new Worker(new URL('../../node_modules/monaco-editor/esm/vs/editor/editor.worker.js', import.meta.url), {
       type: 'module',
     });
   },
@@ -31,6 +35,9 @@ languages.forEach(({ id, monarchGrammar }) => {
 });
 
 monaco.typescript.typescriptDefaults.setEagerModelSync(true);
+monaco.typescript.typescriptDefaults.setDiagnosticsOptions({
+  diagnosticCodesToIgnore: [1108]
+});
 
 monaco.editor.defineTheme('source', sourceAcademyEditorTheme);
 
