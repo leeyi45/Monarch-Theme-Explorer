@@ -23,7 +23,8 @@ export default defineConfig({
         test: {
           name: 'Other Tests',
           environment: 'happy-dom',
-          include: ['**/__tests__/**/*.test.ts']
+          include: ['**/__tests__/**/*.test.ts'],
+          browser: { enabled: false }
         }
       }
     ],
