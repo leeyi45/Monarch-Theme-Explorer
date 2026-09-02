@@ -31,7 +31,7 @@ export function stringifyMonarchGrammar(grammar: monaco.languages.IMonarchLangua
           return obj.toString();
         } else {
           const objStr = Object.entries(obj).map(([key, value]) => {
-            const keyStr = /\W.+/.test(key) ? `'${key}'` : key;
+            const keyStr = /\W/.test(key) ? `'${key}'` : key;
 
             return `${indent}  ${keyStr}: ${stringifyValue(value, indent + '  ')}`;
           }).join(',\n');

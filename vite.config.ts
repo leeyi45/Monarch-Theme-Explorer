@@ -6,14 +6,26 @@ export default defineConfig({
   plugins: [react()],
   test: {
     clearMocks: true,
-    include: ['**/__tests__/**/*.test.{ts,tsx}'],
-    browser: {
-      provider: playwright(),
-      enabled: true,
-      screenshotFailures: false,
-      instances: [
-        { browser: 'chromium' }
-      ]
-    }
+    projects: [
+      {
+        test: {
+          name: 'Browser Tests',
+          include: ['**/__tests__/**/*.test.tsx'],
+          browser: {
+            provider: playwright(),
+            enabled: true,
+            screenshotFailures: false,
+            instances: [ { browser: 'chromium' } ]
+          }
+        }
+      },
+      {
+        test: {
+          name: 'Other Tests',
+          environment: 'happy-dom',
+          include: ['**/__tests__/**/*.test.ts']
+        }
+      }
+    ],
   }
 });

@@ -10,9 +10,9 @@ import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { debounce } from 'es-toolkit';
 import * as monaco from 'monaco-editor';
 import { useRef, useState } from 'react';
+import { getEditorText, updateMonarchGrammar } from './codeHandlers';
 import ThemeConfig from './components/ThemeConfig/ThemeConfig';
 import Editor from './editor/Editor';
 import { sourceAcademyEditorTheme } from './editor/theme';
@@ -36,44 +36,43 @@ export default function App() {
     return foundLang ?? languages[0];
   });
 
-  const [monarchError, setMonarchError] = useState<string | null>(null);
+  const [monarchError, setMonarchError] = useState<string | number | null>(null);
   const monarchEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const codeEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-
-  const onMonarchEditorUpdate = debounce((newValue: string) => {
-    localStorage.setItem('Monarch Editor', newValue);
-
-    let newGrammar: any;
-    try {
-      newGrammar = new Function(newValue)();
-      setMonarchError(null);
-    } catch (error: any) {
-      setMonarchError(error.toString());
-    }
-
-    if (newGrammar) {
-      monaco.languages.setMonarchTokensProvider(languageDef.id, newGrammar);
-    }
-  }, 200);
 
   /**
    * Actually change the current language definition in use
    */
-  const changeLanguageDef = (langDef: ILanguageDefinition) => {
+  function changeLanguageDef(langDef: ILanguageDefinition) {
     setLanguageDef(langDef);
 
     if (typeof langDef.monarchGrammar === 'string') return;
 
     const stringified = 'return ' + stringifyMonarchGrammar(langDef.monarchGrammar);
     monarchEditorRef.current?.setValue(stringified);
-  };
+  }
 
   const monarchEditor = (
     <Stack direction="column" sx={{ height: '100vh' }} spacing={1}>
       <Editor
         language='typescript'
         theme='source'
-        onValueChange={onMonarchEditorUpdate}
+        onValueChange={newValue => {
+          localStorage.setItem('Monarch Editor', newValue);
+          getEditorText(monarchEditorRef.current!)
+            .then(result => {
+              if (result === undefined) return;
+              const [jsText, diag] = result;
+              if (diag !== null) {
+                setMonarchError(diag);
+                return;
+              }
+
+              if (jsText !== null) {
+                updateMonarchGrammar(jsText, languageDef, setMonarchError);
+              }
+            });
+        }}
         defaultValue={getMonarchEditorDefaultValue(languageDef)}
         ref={monarchEditorRef}
       />
@@ -81,7 +80,9 @@ export default function App() {
         <code style={{
           padding: '5px 5px 5px 5px',
           color: monarchError === null ? 'unset' : 'red'
-        }}>{monarchError === null ? 'No Error' : monarchError}</code>
+        }}>{monarchError === null ? 'No Error' :
+            typeof monarchError === 'number' ? `${monarchError} Error(s)` : monarchError
+          }</code>
       </Paper>
     </Stack>
   );
