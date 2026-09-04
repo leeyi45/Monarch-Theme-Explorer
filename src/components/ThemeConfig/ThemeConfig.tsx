@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { debounce } from 'es-toolkit';
+import { assert, debounce } from 'es-toolkit';
 import { editor } from 'monaco-editor';
 import { useState } from 'react';
 import { aceSourceColors } from '../../editor/theme';
@@ -17,9 +17,7 @@ import FormatOptionsSelector from './FormatOptionSelector';
 import OptionAdder from './OptionAdder';
 import ThemeRuleSelector from './ThemeRuleSelector';
 import { textFormatOptions } from './constants';
-import type { ColourOption, RuleChangeAction, ThemeRule } from './types';
-
-type ThemeRulesRecord = Record<string, ThemeRule>;
+import type { ColourOption, RuleChangeAction, ThemeRule, ThemeRulesRecord } from './types';
 
 function themeToRules(theme: editor.IStandaloneThemeData): ThemeRulesRecord {
   return theme.rules.reduce<ThemeRulesRecord>((res, { token, foreground, background, fontStyle }) => ({
@@ -57,34 +55,16 @@ function rulesToTheme(rules: ThemeRulesRecord): editor.ITokenThemeRule[] {
     }));
 }
 
-function themeReducer(prev: ThemeRulesRecord, { token, ...action }: RuleChangeAction): ThemeRulesRecord {
+export function themeReducer(prev: ThemeRulesRecord, { token, ...action }: RuleChangeAction): ThemeRulesRecord {
   switch (action.type) {
-    case 'bg': {
-      const newBg: ColourOption = action.newValue === false
-        ? {
-          ...prev[token].bg,
-          enabled: false
-        } : {
-          ...prev[token].bg,
-          value: action.newValue,
-          enabled: true
-        };
-
-      return {
-        ...prev,
-        [token]: {
-          ...prev[token],
-          bg: newBg
-        }
-      };
-    }
+    case 'bg':
     case 'fg': {
-      const newFg: ColourOption = action.newValue === false
+      const newColour: ColourOption = action.newValue === false
         ? {
-          ...prev[token].fg,
+          ...prev[token][action.type],
           enabled: false
         } : {
-          ...prev[token].fg,
+          ...prev[token][action.type],
           value: action.newValue,
           enabled: true
         };
@@ -93,7 +73,7 @@ function themeReducer(prev: ThemeRulesRecord, { token, ...action }: RuleChangeAc
         ...prev,
         [token]: {
           ...prev[token],
-          fg: newFg
+          [action.type]: newColour
         }
       };
     }
@@ -107,14 +87,17 @@ function themeReducer(prev: ThemeRulesRecord, { token, ...action }: RuleChangeAc
       };
     case 'token': {
       const { [token]: old, ...rest } = prev;
+      assert (old !== undefined, `Cannot rename non-existent token '${token}'`);
+
       return {
         ...rest,
         [action.newValue]: old
       };
     }
     case 'remove': {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [token]: old, ...rest } = prev;
+      assert(old !== undefined, `Cannot remove non-existent token '${token}'`);
+
       return rest;
     }
     case 'format':{

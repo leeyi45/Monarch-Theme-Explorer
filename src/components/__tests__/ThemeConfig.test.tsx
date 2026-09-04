@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
-import { render } from 'vitest-browser-react';
+import { render, type RenderResult } from 'vitest-browser-react';
 import ColourInputBox from '../ThemeConfig/ColourInput';
+import OptionAdder from '../ThemeConfig/OptionAdder';
+import ThemeRuleSelector from '../ThemeConfig/ThemeRuleSelector';
 
 interface ColourInputBoxWrapperProps {
   initialValue: string;
@@ -15,6 +17,18 @@ function ColourInputBoxWrapper({ initialValue, onChange }: ColourInputBoxWrapper
     setValue(newValue);
     onChange(newValue);
   }} />;
+}
+
+function findInputByValue(renderResult: RenderResult, value: string) {
+  const inputElements = renderResult.baseElement.getElementsByTagName('input');
+
+  for (const each of inputElements) {
+    if (each.value === value) {
+      return each;
+    }
+  }
+
+  return null;
 }
 
 describe(ColourInputBox, () => {
@@ -56,5 +70,96 @@ describe(ColourInputBox, () => {
     await userEvent.keyboard('FFFFF[Enter]');
     expect(inputElement.value).toEqual('');
     expect(confirmer).not.toHaveBeenCalled();
+  });
+});
+
+describe(OptionAdder, () => {
+  const itWithRender = it
+    .extend('onConfirm', () => vi.fn())
+    .extend('currentRules', () => ['token1'])
+    .extend('renderResult', ({ onConfirm, currentRules }) => render(<OptionAdder onConfirm={onConfirm} currentRules={currentRules} />));
+
+  const getTokenField = vi.defineHelper((renderResult: RenderResult) => {
+    const tokenInput = findInputByValue(renderResult, 'token');
+    expect(tokenInput).not.toBeNull();
+    return tokenInput!;
+  });
+
+  itWithRender('works', async ({ renderResult, onConfirm }) => {
+    const tokenInput = getTokenField(renderResult);
+    await userEvent.click(tokenInput);
+
+    await userEvent.keyboard('2[Enter]');
+
+    const addIcon = renderResult.getByTestId('AddIcon');
+    await userEvent.click(addIcon);
+
+    expect(onConfirm).toHaveBeenCalledExactlyOnceWith({
+      token: 'token2',
+      enabled: true,
+      bg: {
+        value: '000000',
+        enabled: true
+      },
+      fg: {
+        value: '000000',
+        enabled: true
+      }
+    });
+  });
+
+  itWithRender('won\'t accept a token that already exists', async ({ renderResult, onConfirm }) => {
+    const tokenInput = getTokenField(renderResult);
+    await userEvent.click(tokenInput);
+
+    await userEvent.keyboard('1[Enter]');
+    const addIcon = renderResult.getByTestId('AddIcon');
+    expect(addIcon.element().parentElement).toBeDisabled();
+    expect(() => renderResult.getByText('A rule already exists for token1!').element()).not.toThrow();
+    expect(onConfirm).not.toHaveBeenCalled();
+  });
+
+  itWithRender('won\'t accept a blank token', async ({ renderResult, onConfirm }) => {
+    const tokenInput = getTokenField(renderResult);
+    await userEvent.click(tokenInput);
+
+    await userEvent.keyboard('[Backspace>5\][Enter]');
+    const addIcon = renderResult.getByTestId('AddIcon');
+    expect(addIcon.element().parentElement).toBeDisabled();
+    expect(() => renderResult.getByText("'' is not a valid token name").element()).not.toThrow();
+    expect(onConfirm).not.toHaveBeenCalled();
+  });
+});
+
+describe(ThemeRuleSelector, () => {
+  it('renders #000000 if not provided a value', async () => {
+    const renderResult = await render(<ThemeRuleSelector enabled label='fg' />);
+    const inputElement = findInputByValue(renderResult, '000000');
+    expect(inputElement).not.toBeNull();
+  });
+
+  it('renders the value if provided', async () => {
+    const renderResult = await render(<ThemeRuleSelector enabled label='fg' colour='ffffff' />);
+    const inputElement = findInputByValue(renderResult, 'ffffff');
+    expect(inputElement).not.toBeNull();
+  });
+
+  it('calls onColourChanged when the colour is changed', async () => {
+    const mockedOnColourChanged = vi.fn();
+    const renderResult = await render(<ThemeRuleSelector enabled label='fg' colour='ffffff' onColourChanged={mockedOnColourChanged} />);
+    const inputElement = findInputByValue(renderResult, 'ffffff');
+    expect(inputElement).not.toBeNull();
+
+    await userEvent.click(inputElement!);
+    await userEvent.keyboard('000000[Enter]');
+
+    expect(mockedOnColourChanged).toHaveBeenCalledExactlyOnceWith('000000');
+  });
+
+  it('disables the input if not enabled', async () => {
+    const renderResult = await render(<ThemeRuleSelector label='fg' enabled={false} />);
+    const inputElement = findInputByValue(renderResult, '000000');
+    expect(inputElement).not.toBeNull();
+    expect(inputElement).toBeDisabled();
   });
 });

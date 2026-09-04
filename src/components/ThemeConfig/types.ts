@@ -103,3 +103,5 @@ export type RuleChangeAction =
   | RuleTokenChangeAction
   | RuleEnabledChangeAction
   | RuleFormatAction;
+
+export type ThemeRulesRecord = Record<string, ThemeRule>;
