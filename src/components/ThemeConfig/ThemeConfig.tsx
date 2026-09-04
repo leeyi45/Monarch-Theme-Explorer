@@ -121,6 +121,8 @@ export function themeReducer(prev: ThemeRulesRecord, { token, ...action }: RuleC
           bg: action.bg,
         }
       };
+    default:
+      return prev;
   }
 }
 

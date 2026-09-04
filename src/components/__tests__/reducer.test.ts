@@ -108,4 +108,29 @@ describe(themeReducer, () => {
     const newState = themeReducer(initialState, action);
     expect(newState.token2.enabled).toBe(true);
   });
+
+  it('leaves the other formatting options unchanged when updating a rule', () => {
+    const initialState: ThemeRulesRecord = {
+      token1: {
+        token: 'token1',
+        bg: { value: '#FFFFFF', enabled: true },
+        fg: { value: '#000000', enabled: true },
+        enabled: true,
+        bold: true,
+        italic: true,
+      },
+    };
+
+    const action: RuleChangeAction = {
+      type: 'format',
+      token: 'token1',
+      bold: false
+    };
+
+    const newState = themeReducer(initialState, action);
+    expect(newState.token1.bg.value).toBe('#FFFFFF');
+    expect(newState.token1.bold).toBe(false);
+    expect(newState.token1.italic).toBe(true);
+    expect(newState.token1.underline).toBeUndefined();
+  });
 });
