@@ -5,12 +5,13 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [react()],
   test: {
+    clearMocks: true,
     watch: false,
     projects: [
       {
+        extends: true,
         test: {
           name: 'Browser Tests',
-          clearMocks: true,
           include: ['**/__tests__/**/*.test.tsx'],
           browser: {
             provider: playwright(),
@@ -21,12 +22,11 @@ export default defineConfig({
         }
       },
       {
+        extends: true,
         test: {
           name: 'Other Tests',
-          clearMocks: true,
           environment: 'happy-dom',
           include: ['**/__tests__/**/*.test.ts'],
-          browser: { enabled: false }
         }
       }
     ],
