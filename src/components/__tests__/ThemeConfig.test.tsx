@@ -151,7 +151,7 @@ describe(ThemeRuleSelector, () => {
     expect(inputElement).not.toBeNull();
 
     await userEvent.click(inputElement!);
-    await userEvent.keyboard('000000[Enter]');
+    await userEvent.keyboard('[Backspace>6/]000000[Enter]');
 
     expect(mockedOnColourChanged).toHaveBeenCalledExactlyOnceWith('000000');
   });

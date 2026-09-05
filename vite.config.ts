@@ -9,7 +9,6 @@ export default defineConfig({
     watch: false,
     projects: [
       {
-        extends: true,
         test: {
           name: 'Browser Tests',
           include: ['**/__tests__/**/*.test.tsx'],
@@ -22,7 +21,6 @@ export default defineConfig({
         }
       },
       {
-        extends: true,
         test: {
           name: 'Other Tests',
           environment: 'happy-dom',
