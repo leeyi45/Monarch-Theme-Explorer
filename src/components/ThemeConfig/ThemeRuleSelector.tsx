@@ -1,5 +1,6 @@
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
+
 import ColourInputBox from './ColourInput';
 
 export interface ThemeRuleSelectorProps {

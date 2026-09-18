@@ -1,66 +1,55 @@
 import type { languages } from 'monaco-editor';
 
+import type { ILanguageDefinition } from './types';
+
 /**
  * Javascript keywords that are only allowed for Source §1 and Source §2
  */
-export const baseKeywords = [
-  'const',
-  'debugger',
-  'else',
-  'export',
-  'false',
-  'from',
-  'function',
-  'if',
-  'import',
-  'null',
-  'return',
-  'true',
-  'undefined',
-] as const;
-
-/**
- * Javascript keywords that are only allowed for Source §3 and Source §4, excluding those
- * in {@link baseKeywords}.
- */
-export const extendedKeywords = [
-  'break',
-  'continue',
-  'for',
-  'let',
-  'while'
-] as const;
-
-/**
- * Javascript keywords that are only allowed for the full variant.
- */
-export const fullOnlyKeywords = [
+export const javascriptKeywords = [
   'async',
   'await',
+  'break',
   'case',
   'catch',
   'class',
+  'const',
   'constructor',
+  'continue',
+  'debugger',
   'default',
   'delete',
   'do',
+  'else',
+  'export',
   'extends',
+  'false',
   'finally',
+  'for',
+  'from',
+  'function',
   'get',
+  'if',
+  'import',
   'in',
   'instanceof',
+  'let',
   'new',
+  'null',
   'of',
+  'return',
   'set',
   'super',
   'switch',
   'symbol',
   'this',
   'throw',
+  'true',
   'try',
   'typeof',
+  'undefined',
   'var',
   'void',
+  'while',
   'with',
   'yield',
 ] as const;
@@ -68,21 +57,11 @@ export const fullOnlyKeywords = [
 /**
  * Monarch definition for Source §1 and Source §2
  */
-export const sourceBaseMonarch = {
+export const javascriptMonarch = {
   defaultToken: '',
   tokenPostfix: '.js',
 
-  keywords: baseKeywords,
-  illegalKeywords: fullOnlyKeywords,
-
-  illegalOperators: [
-    '==', '!=',
-    '++', '--',
-    '<<', '>>', '>>>',
-    '&', '|', '^', '~',
-    '+=', '-=', '*=', '**=', '/=', '%=',
-    '<<=', '>>=', '>>>=', '&=', '|=', '^='
-  ],
+  keywords: javascriptKeywords,
 
   // typeKeywords: [
   //  'any', 'boolean', 'number', 'object', 'string', 'undefined'
@@ -94,6 +73,12 @@ export const sourceBaseMonarch = {
     '=>',
     '+', '-', '**', '*', '/', '%',
     '!', '&&', '||', '?', ':', '=',
+    '==', '!=',
+    '++', '--',
+    '<<', '>>', '>>>',
+    '&', '|', '^', '~',
+    '+=', '-=', '*=', '**=', '/=', '%=',
+    '<<=', '>>=', '>>>=', '&=', '|=', '^='
   ],
 
   // we include these common regular expressions
@@ -239,10 +224,9 @@ export const sourceBaseMonarch = {
   },
 } satisfies languages.IMonarchLanguage;
 
-/**
- * Monarch definition for Source §3 and Source §4
- */
-export const sourceExtendedMonarch = {
-  ...sourceBaseMonarch,
-  keywords: [...sourceBaseMonarch.keywords, ...extendedKeywords]
-} satisfies languages.IMonarchLanguage;
+export const javascriptLanguage = {
+  id: 'javascript',
+  name: 'Javascript',
+  monarchGrammar: javascriptMonarch,
+  defaultProgram: '// Type your program in here!\n',
+} satisfies ILanguageDefinition;

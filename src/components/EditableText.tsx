@@ -1,7 +1,9 @@
 import Box from '@mui/material/Box';
 import type { InputBaseComponentProps } from '@mui/material/InputBase';
 import Typography from '@mui/material/Typography';
+
 import { useEffect, useRef, useState } from 'react';
+
 import InputField from './InputField';
 
 interface EditableTextProps {

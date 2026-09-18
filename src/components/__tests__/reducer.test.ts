@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { themeReducer } from '../ThemeConfig/ThemeConfig';
 import type { RuleChangeAction, ThemeRulesRecord } from '../ThemeConfig/types';
 

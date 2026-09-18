@@ -1,4 +1,5 @@
 import DeleteIcon from '@mui/icons-material/Delete';
+
 import Autocomplete from '@mui/material/Autocomplete';
 import Card from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
@@ -9,10 +10,11 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+
 import { assert, debounce } from 'es-toolkit';
 import { editor } from 'monaco-editor';
 import { useState } from 'react';
-import { aceSourceColors } from '../../editor/theme';
+
 import FormatOptionsSelector from './FormatOptionSelector';
 import OptionAdder from './OptionAdder';
 import ThemeRuleSelector from './ThemeRuleSelector';
@@ -87,7 +89,8 @@ export function themeReducer(prev: ThemeRulesRecord, { token, ...action }: RuleC
       };
     case 'token': {
       const { [token]: old, ...rest } = prev;
-      assert (old !== undefined, `Cannot rename non-existent token '${token}'`);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      assert(old !== undefined, `Cannot rename non-existent token '${token}'`);
 
       return {
         ...rest,
@@ -96,6 +99,7 @@ export function themeReducer(prev: ThemeRulesRecord, { token, ...action }: RuleC
     }
     case 'remove': {
       const { [token]: old, ...rest } = prev;
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       assert(old !== undefined, `Cannot remove non-existent token '${token}'`);
 
       return rest;
@@ -153,7 +157,7 @@ export default function ThemeConfig({ theme, themeId }: ThemeConfigProps) {
 
   return <Stack direction="column">
     <Typography component="h1">Theme Configuration</Typography>
-    <Paper sx={{ backgroundColor: aceSourceColors.editorBackground }}>
+    <Paper>
       <div style={{
         padding: '5px 5px 5px 5px'
       }}>

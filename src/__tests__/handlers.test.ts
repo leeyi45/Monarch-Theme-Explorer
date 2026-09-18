@@ -1,8 +1,9 @@
 import * as monaco from 'monaco-editor';
 import { describe, expect, it, vi } from 'vitest';
+
 import { getEditorText, updateMonarchGrammar } from '../codeHandlers';
 import { stringifyMonarchGrammar } from '../languages';
-import { source1Language } from '../languages/source';
+import { javascriptLanguage } from '../languages/javascript';
 
 vi.mock(import('es-toolkit'), async importOriginal => {
   const original = await importOriginal();
@@ -19,20 +20,20 @@ const mockedSetMonarchTokensProvider = vi.spyOn(monaco.languages, 'setMonarchTok
 
 describe('updateMonarchGrammar', () => {
   it('works', () => {
-    const validGrammar = source1Language.monarchGrammar;
+    const validGrammar = javascriptLanguage.monarchGrammar;
     const jsText = 'return ' + stringifyMonarchGrammar(validGrammar);
 
     const mockedSetError = vi.fn();
-    expect(() => updateMonarchGrammar(jsText, source1Language, mockedSetError)).not.toThrow();
+    expect(() => updateMonarchGrammar(jsText, javascriptLanguage, mockedSetError)).not.toThrow();
     expect(mockedSetError).toHaveBeenCalledExactlyOnceWith(null);
-    expect(mockedSetMonarchTokensProvider).toHaveBeenCalledExactlyOnceWith(source1Language.id, validGrammar);
+    expect(mockedSetMonarchTokensProvider).toHaveBeenCalledExactlyOnceWith(javascriptLanguage.id, validGrammar);
   });
 
   it('sets an error when the grammar is not an object', () => {
     const jsText = 'return 123;';
 
     const mockedSetError = vi.fn();
-    expect(() => updateMonarchGrammar(jsText, source1Language, mockedSetError)).not.toThrow();
+    expect(() => updateMonarchGrammar(jsText, javascriptLanguage, mockedSetError)).not.toThrow();
     expect(mockedSetError).toHaveBeenCalledExactlyOnceWith('Monarch Grammar must be an object');
     expect(mockedSetMonarchTokensProvider).not.toHaveBeenCalled();
   });
@@ -41,7 +42,7 @@ describe('updateMonarchGrammar', () => {
     const jsText = 'return { invalid: ; }';
 
     const mockedSetError = vi.fn();
-    expect(() => updateMonarchGrammar(jsText, source1Language, mockedSetError)).not.toThrow();
+    expect(() => updateMonarchGrammar(jsText, javascriptLanguage, mockedSetError)).not.toThrow();
     expect(mockedSetError).toHaveBeenCalledExactlyOnceWith(expect.stringMatching(/SyntaxError: Unexpected token ';'/));
     expect(mockedSetMonarchTokensProvider).not.toHaveBeenCalled();
   });
