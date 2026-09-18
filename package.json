@@ -35,6 +35,7 @@
     "react-dom": "^19.2.8"
   },
   "scripts": {
+    "build": "vite build",
     "dev": "vite",
     "lint": "eslint",
     "test": "vitest"
