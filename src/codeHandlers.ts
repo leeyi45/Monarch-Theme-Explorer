@@ -1,5 +1,6 @@
 import { debounce, limitAsync } from 'es-toolkit';
 import * as monaco from 'monaco-editor';
+
 import type { ILanguageDefinition } from './languages/types';
 
 function flattenMessageText(messageText: monaco.typescript.Diagnostic['messageText']): string {
@@ -52,7 +53,7 @@ export const getEditorText = limitAsync(
       ? null
       : allDiagnostics.map(each => formatDiag(each, model)).join('\n');
 
-    if (!emitOutput.outputFiles || emitOutput.outputFiles.length === 0) return [null, diagStr];
+    if (emitOutput.outputFiles.length === 0) return [null, diagStr];
     return [emitOutput.outputFiles[0].text, diagStr];
   },
   1
@@ -62,7 +63,7 @@ export const getEditorText = limitAsync(
  * Convert the raw Javascript text from the Monarch Editor into a grammar object
  */
 export const updateMonarchGrammar = debounce(
-  (jsText: string, languageDef: ILanguageDefinition, setError: (error: string | null) => void) => {
+  (jsText: string | undefined, languageDef: ILanguageDefinition, setError: (error: string | null) => void) => {
     if (jsText === undefined) return;
 
     try {

@@ -1,6 +1,7 @@
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import FormatUnderlineIcon from '@mui/icons-material/FormatUnderlined';
+
 import type { ReactNode } from 'react';
 
 // TODO: Possibly enable strikethrough in the future?

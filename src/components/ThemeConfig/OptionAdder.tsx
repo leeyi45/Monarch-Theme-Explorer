@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+
 import Card from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
@@ -7,7 +8,9 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+
 import { useState } from 'react';
+
 import FormatOptionsSelector from './FormatOptionSelector';
 import ThemeRuleSelector from './ThemeRuleSelector';
 import type { TextFormatOptions, ThemeRule } from './types';

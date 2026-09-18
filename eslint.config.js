@@ -29,6 +29,21 @@ export default defineConfig(
         'warn',
         {
           groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+          'newlines-between': 'always',
+          pathGroupsExcludedImportTypes: ['builtin'],
+          distinctGroup: true,
+          pathGroups: [
+            {
+              pattern: '@mui/icons-material/**',
+              group: 'external',
+              position: 'before'
+            },
+            {
+              pattern: '@mui/material/**',
+              group: 'external',
+              position: 'before'
+            }
+          ],
           named: {
             import: true,
             types: 'types-last'
@@ -75,11 +90,17 @@ export default defineConfig(
       '@stylistic/type-annotation-spacing': ['warn', { overrides: { colon: { before: false, after: true } } }],
 
       '@typescript-eslint/consistent-type-assertions': ['warn', { assertionStyle: 'as' }],
+      '@typescript-eslint/no-unnecessary-condition': ['error', { allowConstantLoopConditions: 'always' }],
       '@typescript-eslint/no-explicit-any': 'off', // was error
       '@typescript-eslint/no-import-type-side-effects': 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/only-throw-error': 'error',
+    },
+    settings: {
+      'import/resolver': {
+        typescript: true
+      }
     }
   },
   {
