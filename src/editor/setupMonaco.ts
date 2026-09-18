@@ -3,7 +3,7 @@ import * as monaco from 'monaco-editor';
 
 import { languages } from '../languages';
 
-import { editorTheme } from './theme';
+import * as themes from './theme';
 
 type MonacoEnvironmentGlobal = typeof globalThis & {
   MonacoEnvironment?: {
@@ -41,6 +41,9 @@ monaco.typescript.typescriptDefaults.setDiagnosticsOptions({
   diagnosticCodesToIgnore: [1108]
 });
 
-monaco.editor.defineTheme('vs-dark-custom', editorTheme);
+Object.entries(themes).forEach(([themeName, theme]) => {
+  console.log(`Defined ${themeName}-custom theme`);
+  monaco.editor.defineTheme(`${themeName}-custom`, theme);
+});
 
 loader.config({ monaco });

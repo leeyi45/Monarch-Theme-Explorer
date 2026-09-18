@@ -18,7 +18,7 @@ import { useRef, useState } from 'react';
 import { getEditorText, updateMonarchGrammar } from './codeHandlers';
 import ThemeConfig from './components/ThemeConfig/ThemeConfig';
 import Editor from './editor/Editor';
-import { editorTheme } from './editor/theme';
+import { vs_dark } from './editor/theme';
 import { languages, stringifyMonarchGrammar } from './languages';
 import type { ILanguageDefinition } from './languages/types';
 
@@ -176,8 +176,8 @@ export default function App() {
       <Grid size={5}>{codeEditor}</Grid>
       <Grid size={2}>
         <ThemeConfig
-          themeId='source'
-          theme={editorTheme}
+          themeId='vs-dark-custom'
+          theme={vs_dark}
         />
       </Grid>
     </Grid>
