@@ -54,7 +54,8 @@ export const pythonMonarch = {
     '|', '|=',
     '&', '&=',
     '^', '^=',
-    '@', '@='
+    '@', '@=',
+    ':='
   ],
 
   constants: ['True', 'False', 'None'],
@@ -81,13 +82,11 @@ export const pythonMonarch = {
         cases: {
           '@keywords': 'keyword',
           '@constants': 'constant',
-          '@illegalKeywords': 'keyword.illegal',
           '@default': 'identifier'
         }
       }],
       [/@symbols/, {
         cases: {
-          '@illegalOperators': 'operator.illegal',
           '@operators': 'operator'
         }
       }]

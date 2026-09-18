@@ -59,7 +59,7 @@ export default function App() {
     <Stack direction="column" sx={{ height: '100vh' }} spacing={1}>
       <Editor
         language='typescript'
-        theme='source'
+        theme='vs-dark-custom'
         onValueChange={newValue => {
           localStorage.setItem('Monarch Editor', newValue);
           getEditorText(monarchEditorRef.current!)
@@ -108,7 +108,7 @@ export default function App() {
 
   const codeEditor = (
     <Editor
-      theme='source'
+      theme='vs-dark-custom'
       language={languageDef.id}
       defaultValue={localStorage.getItem('Code Editor') ?? ''}
       onValueChange={newValue => {

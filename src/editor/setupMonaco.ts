@@ -42,8 +42,12 @@ monaco.typescript.typescriptDefaults.setDiagnosticsOptions({
 });
 
 Object.entries(themes).forEach(([themeName, theme]) => {
-  console.log(`Defined ${themeName}-custom theme`);
-  monaco.editor.defineTheme(`${themeName}-custom`, theme);
+  themeName = themeName.replaceAll('_', '-');
+  try {
+    monaco.editor.defineTheme(`${themeName}-custom`, theme);
+  } catch (error) {
+    console.error(`Error while defining ${themeName}-custom`, error);
+  }
 });
 
 loader.config({ monaco });

@@ -2,9 +2,6 @@ import type { languages } from 'monaco-editor';
 
 import type { ILanguageDefinition } from './types';
 
-/**
- * Javascript keywords that are only allowed for Source §1 and Source §2
- */
 export const javascriptKeywords = [
   'async',
   'await',
@@ -54,9 +51,6 @@ export const javascriptKeywords = [
   'yield',
 ] as const;
 
-/**
- * Monarch definition for Source §1 and Source §2
- */
 export const javascriptMonarch = {
   defaultToken: '',
   tokenPostfix: '.js',
@@ -106,7 +100,6 @@ export const javascriptMonarch = {
       // identifiers and keywords
       [/[a-z_$][\w$]*/, {
         cases: {
-          '@illegalKeywords': 'keyword.illegal',
           '@keywords': 'keyword',
           '@default': 'identifier'
         }
@@ -126,7 +119,6 @@ export const javascriptMonarch = {
       [/@symbols/, {
         cases: {
           '@operators': 'operator',
-          '@illegalOperators': 'operator.illegal',
           '@default': ''
         }
       }],

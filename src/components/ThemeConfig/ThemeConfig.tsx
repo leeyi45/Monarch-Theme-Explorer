@@ -185,7 +185,7 @@ export default function ThemeConfig({ theme, themeId }: ThemeConfigProps) {
                         size='small'
                       />}
                       options={Object.keys(rules)}
-                      renderOption={(props, name) => <code {...props} >{name === '' ? 'Default' : name}</code>}
+                      renderOption={({ key, ...props }, name) => <code {...props} key={key} >{name === '' ? 'Default' : name}</code>}
                       value={ruleName}
                       onChange={(_, newValue) => setRuleName(newValue ?? '')}
                     />
