@@ -9,7 +9,6 @@
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "rootDir": "src",
-    "skipLibCheck": true,
     "strict": true,
     "verbatimModuleSyntax": true
   }

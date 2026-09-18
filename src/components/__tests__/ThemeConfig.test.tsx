@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render, type RenderResult } from 'vitest-browser-react';
-
 import ColourInputBox from '../ThemeConfig/ColourInput';
 import OptionAdder from '../ThemeConfig/OptionAdder';
 import ThemeRuleSelector from '../ThemeConfig/ThemeRuleSelector';
@@ -151,7 +150,7 @@ describe(ThemeRuleSelector, () => {
     const inputElement = findInputByValue(renderResult, 'ffffff');
     expect(inputElement).not.toBeNull();
 
-    await userEvent.click(inputElement as HTMLInputElement);
+    await userEvent.click(inputElement!);
     await userEvent.keyboard('[Backspace>6/]000000[Enter]');
 
     expect(mockedOnColourChanged).toHaveBeenCalledExactlyOnceWith('000000');

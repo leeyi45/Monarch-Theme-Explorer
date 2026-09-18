@@ -1,60 +1,74 @@
 import type { languages } from 'monaco-editor';
 
-import type { ILanguageDefinition } from './types';
-
-export const pythonKeywords = [
+/**
+ * Python keywords that are only allowed for Python §1 and Python §2.
+ */
+export const baseKeywords = [
   'and',
   'as',
+  'def',
+  'elif',
+  'else',
+  'from',
+  'if',
+  'import',
+  'lambda',
+  'not',
+  'or',
+  'return',
+] as const;
+
+/**
+ * Python keywords that are only allowed for Python §3 and Python §4, excluding the
+ * ones defined in {@link baseKeywords}.
+ */
+export const extendedKeywords = [
+  'break',
+  'continue',
+  'for',
+  'global',
+  'in',
+  'is',
+  'nonlocal',
+  'pass',
+  'while',
+] as const;
+
+/**
+ * Python keywords that are only allowed for the full variant
+ */
+export const fullOnlyKeywords = [
   'assert',
   'async',
   'await',
-  'break',
   'case',
   'class',
-  'continue',
-  'def',
   'del',
-  'elif',
-  'else',
   'except',
   'finally',
-  'for',
-  'from',
-  'global',
-  'if',
-  'in',
-  'is',
-  'import',
-  'lambda',
   'match',
-  'nonlocal',
-  'not',
-  'or',
-  'pass',
   'raise',
-  'return',
   'try',
-  'while',
   'with',
   'yield',
 ] as const;
 
-export const pythonMonarch = {
+const baseMonarch = {
   defaultToken: '',
   tokenPostfix: '.python',
-
-  keywords: pythonKeywords,
 
   operators: [
     '=',
     '+', '-', '//', '/', '*', '**', '%',
     '>', '<', '>=', '<=',
     '==', '!=',
+  ],
+
+  illegalOperators: [
     '+=', '-=', '/=', '//=', '*=', '**=',
     '|', '|=',
     '&', '&=',
     '^', '^=',
-    '@', '@='
   ],
 
   constants: ['True', 'False', 'None'],
@@ -142,9 +156,26 @@ export const pythonMonarch = {
   }
 } satisfies languages.IMonarchLanguage;
 
-export const pythonLanguage = {
-  id: 'python',
-  name: 'Python',
-  monarchGrammar: pythonMonarch,
-  defaultProgram: '# Type your program here!\n'
-} satisfies ILanguageDefinition;
+/**
+ * Simplified Monarch grammar for Python §1 and Python §2.
+ */
+export const pythonBaseMonarch = {
+  ...baseMonarch,
+  keywords: baseKeywords,
+  illegalKeywords: [
+    ...extendedKeywords,
+    ...fullOnlyKeywords
+  ]
+} satisfies languages.IMonarchLanguage;
+
+/**
+ * Extended Monarch grammar for Python §3 and Python §4.
+ */
+export const pythonExtendedMonarch = {
+  ...baseMonarch,
+  keywords: [
+    ...baseKeywords,
+    ...extendedKeywords
+  ],
+  illegalKeywords: fullOnlyKeywords
+} satisfies languages.IMonarchLanguage;

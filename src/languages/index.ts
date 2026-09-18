@@ -1,12 +1,11 @@
 import type * as monaco from 'monaco-editor';
-
-import { javascriptLanguage } from './javascript';
-import { pythonLanguage } from './python';
+import pythonLanguage from './python';
+import sourceLanguage from './source';
 import type { ILanguageDefinition } from './types';
 
 export const languages: ILanguageDefinition[] = [
-  javascriptLanguage,
-  pythonLanguage
+  ...sourceLanguage,
+  ...pythonLanguage
 ];
 
 export function stringifyMonarchGrammar(grammar: monaco.languages.IMonarchLanguage): string {

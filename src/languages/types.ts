@@ -11,7 +11,7 @@ export interface ILanguageDefinition {
    * Monarch grammar used for tokenizing this language in the `monaco-editor`.\
    * If a string is given the string is used by the editor to identify the language.
    */
-  readonly monarchGrammar: languages.IMonarchLanguage;
+  readonly monarchGrammar: string | languages.IMonarchLanguage;
 
   readonly defaultProgram: string;
 }

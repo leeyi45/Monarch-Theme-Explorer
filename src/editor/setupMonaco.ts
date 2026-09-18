@@ -1,9 +1,7 @@
 import { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
-
 import { languages } from '../languages';
-
-import { editorTheme } from './theme';
+import { sourceAcademyEditorTheme } from './theme';
 
 type MonacoEnvironmentGlobal = typeof globalThis & {
   MonacoEnvironment?: {
@@ -41,6 +39,6 @@ monaco.typescript.typescriptDefaults.setDiagnosticsOptions({
   diagnosticCodesToIgnore: [1108]
 });
 
-monaco.editor.defineTheme('vs-dark-custom', editorTheme);
+monaco.editor.defineTheme('source', sourceAcademyEditorTheme);
 
 loader.config({ monaco });

@@ -1,6 +1,5 @@
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
-
 import { textFormatIcons, textFormatOptions } from './constants';
 import type { TextFormatOption, TextFormatOptions } from './types';
 

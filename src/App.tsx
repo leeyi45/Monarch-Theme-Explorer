@@ -1,7 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SaveIcon from '@mui/icons-material/Save';
-
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -11,14 +10,12 @@ import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-
 import * as monaco from 'monaco-editor';
 import { useRef, useState } from 'react';
-
 import { getEditorText, updateMonarchGrammar } from './codeHandlers';
 import ThemeConfig from './components/ThemeConfig/ThemeConfig';
 import Editor from './editor/Editor';
-import { editorTheme } from './editor/theme';
+import { sourceAcademyEditorTheme } from './editor/theme';
 import { languages, stringifyMonarchGrammar } from './languages';
 import type { ILanguageDefinition } from './languages/types';
 
@@ -177,7 +174,7 @@ export default function App() {
       <Grid size={2}>
         <ThemeConfig
           themeId='source'
-          theme={editorTheme}
+          theme={sourceAcademyEditorTheme}
         />
       </Grid>
     </Grid>
