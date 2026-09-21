@@ -3,7 +3,7 @@ import * as monaco from 'monaco-editor';
 
 import { languages } from '../languages';
 
-import * as themes from './theme';
+import { themes } from './theme';
 
 type MonacoEnvironmentGlobal = typeof globalThis & {
   MonacoEnvironment?: {
@@ -42,7 +42,6 @@ monaco.typescript.typescriptDefaults.setDiagnosticsOptions({
 });
 
 Object.entries(themes).forEach(([themeName, theme]) => {
-  themeName = themeName.replaceAll('_', '-');
   try {
     monaco.editor.defineTheme(`${themeName}-custom`, theme);
   } catch (error) {

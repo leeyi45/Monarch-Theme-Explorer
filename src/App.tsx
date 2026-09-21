@@ -5,7 +5,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,7 +20,7 @@ import { useRef, useState } from 'react';
 import { getEditorText, updateMonarchGrammar } from './codeHandlers';
 import ThemeConfig from './components/ThemeConfig/ThemeConfig';
 import Editor from './editor/Editor';
-import { vs_dark } from './editor/theme';
+import * as theme from './editor/theme';
 import { languages, stringifyMonarchGrammar } from './languages';
 import type { ILanguageDefinition } from './languages/types';
 
@@ -26,8 +28,13 @@ function getMonarchEditorDefaultValue(langDef: ILanguageDefinition): string {
   const localStorageItem = localStorage.getItem('Monarch Editor');
   if (localStorageItem !== null) return localStorageItem;
 
-  if (typeof langDef.monarchGrammar === 'string') return '';
   return 'return ' + stringifyMonarchGrammar(langDef.monarchGrammar);
+}
+
+function getThemeFromLocalStorage(): keyof (typeof theme.themes) {
+  const localStorageItem = localStorage.getItem('theme');
+  if (localStorageItem === null || !(localStorageItem in theme.themes)) return 'vs-dark';
+  return localStorageItem as keyof (typeof theme.themes);
 }
 
 export default function App() {
@@ -39,9 +46,22 @@ export default function App() {
     return foundLang ?? languages[0];
   });
 
+  const [selectedThemeId, rawSetSelectedThemeId] = useState<keyof (typeof theme.themes)>(getThemeFromLocalStorage());
+
   const [monarchError, setMonarchError] = useState<string | number | null>(null);
   const monarchEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const codeEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const themeEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+
+  function setSelectedThemeId(newId: keyof (typeof theme.themes)) {
+    localStorage.setItem('theme', newId);
+    rawSetSelectedThemeId(newId);
+
+    const model = themeEditorRef.current?.getModel();
+    if (!model) return;
+
+    model.setValue(JSON.stringify(theme.themes[newId], null, 2));
+  }
 
   /**
    * Actually change the current language definition in use
@@ -59,7 +79,7 @@ export default function App() {
     <Stack direction="column" sx={{ height: '100vh' }} spacing={1}>
       <Editor
         language='typescript'
-        theme='vs-dark-custom'
+        theme={`${selectedThemeId}-custom`}
         onValueChange={newValue => {
           localStorage.setItem('Monarch Editor', newValue);
           getEditorText(monarchEditorRef.current!)
@@ -108,13 +128,22 @@ export default function App() {
 
   const codeEditor = (
     <Editor
-      theme='vs-dark-custom'
+      theme={`${selectedThemeId}-custom`}
       language={languageDef.id}
       defaultValue={localStorage.getItem('Code Editor') ?? ''}
       onValueChange={newValue => {
         localStorage.setItem('Code Editor', newValue);
       }}
       ref={codeEditorRef}
+    />
+  );
+
+  const themeEditor = (
+    <Editor
+      ref={themeEditorRef}
+      theme={`${selectedThemeId}-custom`}
+      defaultValue={JSON.stringify(theme.themes[selectedThemeId], null, 2)}
+      language='json'
     />
   );
 
@@ -175,10 +204,22 @@ export default function App() {
       <Grid size={5}>{monarchEditor}</Grid>
       <Grid size={5}>{codeEditor}</Grid>
       <Grid size={2}>
+        <Select
+          value={selectedThemeId}
+          onChange={e => setSelectedThemeId(e.target.value)}
+          size='small'
+        >
+          {Object.keys(theme.themes).map(each => (
+            <MenuItem value={each}>
+              <code>{each}</code>
+            </MenuItem>
+          ))}
+        </Select>
         <ThemeConfig
-          themeId='vs-dark-custom'
-          theme={vs_dark}
+          themeId={`${selectedThemeId}-custom`}
+          theme={theme.themes[selectedThemeId]}
         />
+        {themeEditor}
       </Grid>
     </Grid>
   </>;
