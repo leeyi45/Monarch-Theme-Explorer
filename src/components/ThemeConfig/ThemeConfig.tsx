@@ -21,7 +21,7 @@ import ThemeRuleSelector from './ThemeRuleSelector';
 import { textFormatOptions } from './constants';
 import type { ColourOption, RuleChangeAction, ThemeRule, ThemeRulesRecord } from './types';
 
-function themeToRules(theme: editor.IStandaloneThemeData): ThemeRulesRecord {
+export function themeToRules(theme: editor.IStandaloneThemeData): ThemeRulesRecord {
   return theme.rules.reduce<ThemeRulesRecord>((res, { token, foreground, background, fontStyle }) => ({
     ...res,
     [token]: {

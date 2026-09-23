@@ -19,6 +19,7 @@ import { useRef, useState } from 'react';
 
 import { getEditorText, updateMonarchGrammar } from './codeHandlers';
 import ThemeConfig from './components/ThemeConfig/ThemeConfig';
+import ThemeDisplay from './components/ThemeConfig/ThemeDisplay';
 import Editor from './editor/Editor';
 import * as theme from './editor/theme';
 import { languages, stringifyMonarchGrammar } from './languages';
@@ -35,6 +36,17 @@ function getThemeFromLocalStorage(): keyof (typeof theme.themes) {
   const localStorageItem = localStorage.getItem('theme');
   if (localStorageItem === null || !(localStorageItem in theme.themes)) return 'vs-dark';
   return localStorageItem as keyof (typeof theme.themes);
+}
+
+function themeStringifier(key: string, value: any) {
+  switch (value) {
+    case true:
+      return 'true';
+    case false:
+      return 'false';
+    default:
+      return value;
+  }
 }
 
 export default function App() {
@@ -60,7 +72,7 @@ export default function App() {
     const model = themeEditorRef.current?.getModel();
     if (!model) return;
 
-    model.setValue(JSON.stringify(theme.themes[newId], null, 2));
+    model.setValue(JSON.stringify(theme.themes[newId], themeStringifier, 2));
   }
 
   /**
@@ -142,7 +154,7 @@ export default function App() {
     <Editor
       ref={themeEditorRef}
       theme={`${selectedThemeId}-custom`}
-      defaultValue={JSON.stringify(theme.themes[selectedThemeId], null, 2)}
+      defaultValue={JSON.stringify(theme.themes[selectedThemeId], themeStringifier, 2)}
       language='json'
     />
   );
@@ -219,7 +231,7 @@ export default function App() {
           themeId={`${selectedThemeId}-custom`}
           theme={theme.themes[selectedThemeId]}
         />
-        {themeEditor}
+        {<ThemeDisplay theme={theme.themes[selectedThemeId]} />}
       </Grid>
     </Grid>
   </>;
