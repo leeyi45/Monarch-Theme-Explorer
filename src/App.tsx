@@ -32,7 +32,7 @@ function getMonarchEditorDefaultValue(langDef: ILanguageDefinition): string {
   return 'return ' + stringifyMonarchGrammar(langDef.monarchGrammar);
 }
 
-function getThemeFromLocalStorage(): keyof (typeof theme.themes) {
+function getThemeFromLocalStorage() {
   const localStorageItem = localStorage.getItem('theme');
   if (localStorageItem === null || !(localStorageItem in theme.themes)) return 'vs-dark';
   return localStorageItem as keyof (typeof theme.themes);
